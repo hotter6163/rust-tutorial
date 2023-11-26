@@ -1,3 +1,5 @@
 fn main() {
-    println!("Hello, world!");
+    let space = "   ";
+    let space = space.len();
+    println!("space: {}", space);
 }
