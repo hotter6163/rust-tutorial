@@ -1,23 +1,9 @@
-#[derive(Debug)]
-enum UsState {
-    Alabama,
-    Alaska,
-    // --snip--
-}
+use std::fmt::Result;
+use std::io::Result as IoResult;
 
-enum Coin {
-    Penny,
-    Nickel,
-    Dime,
-    Quarter(UsState),
-}
+use std::collections::HashMap;
 
 fn main() {
-    let mut count = 0;
-    let coin = Coin::Quarter(UsState::Alaska);
-    if let Coin::Quarter(state) = coin {
-        println!("State quarter from {:?}!", state);
-    } else {
-        count += 1;
-    }
+    let mut map = HashMap::new();
+    map.insert(1, 2);
 }
