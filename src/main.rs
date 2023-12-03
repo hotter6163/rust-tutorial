@@ -1,24 +1,32 @@
-use std::{
-    fs::File,
-    io::{self, Read},
-};
+mod guess;
+
+use guess::Guess;
+use std::io;
 
 fn main() {
-    let f = File::open("hello.txt").expect("Failed to open hello.txt");
+    helper();
 }
 
-fn read_username_from_file() -> Result<String, io::Error> {
-    let f = File::open("hello.txt");
+fn helper() {
+    match require_guess() {
+        Some(guess) => println!("You guessed: {}", guess.value()),
+        None => println!("You didn't guess a number."),
+    }
+    helper();
+}
 
-    let mut f = match f {
-        Ok(file) => file,
-        Err(e) => return Err(e),
-    };
+fn require_guess() -> Option<Guess> {
+    let mut input = String::new();
 
-    let mut s = String::new();
+    println!("Please input your guess.");
 
-    match f.read_to_string(&mut s) {
-        Ok(_) => Ok(s),
-        Err(e) => Err(e),
+    if io::stdin().read_line(&mut input).is_err() {
+        return None;
+    }
+
+    let result = input.trim().parse();
+    match result {
+        Ok(num) => Guess::new(num).ok(),
+        Err(_) => None,
     }
 }
