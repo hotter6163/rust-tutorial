@@ -1,32 +1,21 @@
-mod guess;
-
-use guess::Guess;
-use std::io;
-
 fn main() {
-    helper();
+    let number_list = vec![34, 50, 25, 100, 65];
+
+    println!("最大の数は {} です", largest(&number_list));
+
+    let number_list = vec![102, 34, 6000, 89, 54, 2, 43, 8];
+
+    println!("The largest number is {}", largest(&number_list));
 }
 
-fn helper() {
-    match require_guess() {
-        Some(guess) => println!("You guessed: {}", guess.value()),
-        None => println!("You didn't guess a number."),
-    }
-    helper();
-}
+fn largest(list: &[i32]) -> i32 {
+    let mut largest = list[0];
 
-fn require_guess() -> Option<Guess> {
-    let mut input = String::new();
-
-    println!("Please input your guess.");
-
-    if io::stdin().read_line(&mut input).is_err() {
-        return None;
+    for &item in list.iter() {
+        if item > largest {
+            largest = item
+        }
     }
 
-    let result = input.trim().parse();
-    match result {
-        Ok(num) => Guess::new(num).ok(),
-        Err(_) => None,
-    }
+    largest
 }
