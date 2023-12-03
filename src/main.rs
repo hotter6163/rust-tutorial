@@ -1,21 +1,63 @@
-fn main() {
-    let number_list = vec![34, 50, 25, 100, 65];
-
-    println!("最大の数は {} です", largest(&number_list));
-
-    let number_list = vec![102, 34, 6000, 89, 54, 2, 43, 8];
-
-    println!("The largest number is {}", largest(&number_list));
+#[derive(Debug)]
+struct Point<T, U> {
+    x: T,
+    y: U,
 }
 
-fn largest(list: &[i32]) -> i32 {
-    let mut largest = list[0];
+impl<T, U> Point<T, U> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
 
-    for &item in list.iter() {
-        if item > largest {
-            largest = item
+impl Point<f32, f32> {
+    fn distance_from_origin(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+impl<T: Copy, U> Point<T, U> {
+    fn mixup<V, W: Copy>(&self, other: &Point<V, W>) -> Point<T, W> {
+        Point {
+            x: self.x,
+            y: other.y,
         }
     }
-
-    largest
 }
+
+fn main() {
+    // let number_list = vec![34, 50, 25, 100, 65];
+
+    // let result = largest(&number_list);
+    // println!("The largest number is {}", result);
+
+    // let char_list = vec!['y', 'm', 'a', 'q'];
+
+    // let result = largest(&char_list);
+    // println!("The largest char is {}", result);
+
+    let both_integer = Point {
+        x: String::from("hello world"),
+        y: 10,
+    };
+    let both_float = Point { x: 1.0, y: 4.0 };
+    println!("both_integer.x = {}", both_integer.x());
+    println!("both_float.x = {}", both_float.x());
+    println!(
+        "both_float.distance_from_origin = {}",
+        both_float.distance_from_origin()
+    );
+    println!("{:?}", both_float.mixup(&both_integer));
+}
+
+// fn largest<T>(list: &[T]) -> T {
+//     let mut largest = list[0];
+
+//     for &item in list.iter() {
+//         if item > largest {
+//             largest = item;
+//         }
+//     }
+
+//     largest
+// }
