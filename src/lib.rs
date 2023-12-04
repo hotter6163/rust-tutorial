@@ -1,3 +1,5 @@
+// https://doc.rust-jp.rs/book-ja/ch11-02-running-tests.html#%E5%90%8D%E5%89%8D%E3%81%A7%E3%83%86%E3%82%B9%E3%83%88%E3%81%AE%E4%B8%80%E9%83%A8%E3%82%92%E5%AE%9F%E8%A1%8C%E3%81%99%E3%82%8B
+
 #[derive(Debug)]
 struct Rectangle {
     width: u32,
@@ -42,6 +44,12 @@ impl Guess {
     }
 }
 
+fn prints_and_returns_10(a: i32) -> i32 {
+    //{}を返す
+    println!("I got the value {}", a);
+    10
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,8 +88,18 @@ mod tests {
     }
 
     #[test]
-    fn it_adds_two() {
+    fn add_two_and_two() {
         assert_eq!(4, add_two(2));
+    }
+
+    #[test]
+    fn add_three_and_two() {
+        assert_eq!(5, add_two(3));
+    }
+
+    #[test]
+    fn one_hundred() {
+        assert_eq!(102, add_two(100));
     }
 
     #[test]
@@ -98,5 +116,17 @@ mod tests {
     #[should_panic(expected = "Guess value must be less than or equal to 100")]
     fn greater_than_100() {
         Guess::new(200);
+    }
+
+    #[test]
+    fn this_test_will_pass() {
+        let value = prints_and_returns_10(4);
+        assert_eq!(10, value);
+    }
+
+    #[test]
+    fn this_test_will_fail() {
+        let value = prints_and_returns_10(8);
+        assert_eq!(5, value);
     }
 }
