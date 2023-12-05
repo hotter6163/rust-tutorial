@@ -1,24 +1,26 @@
+extern crate rust_tutorial;
+
 use std::env;
-use std::fs::File;
-use std::io::prelude::*;
+use std::process;
+
+use rust_tutorial::Config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let query = args.get(1).expect("Please provide a first argument");
-    let filename = args.get(2).expect("Please provide a second argument");
 
-    let contents = read_file_contents(filename);
-    println!("With text:\n{}", contents);
-}
+    let config = Config::new(&args).unwrap_or_else(|err| {
+        // 引数の解析に失敗しました
+        println!("Problem parsing arguments: {}", err);
+        process::exit(1);
+    });
 
-fn read_file_contents(filename: &str) -> String {
-    println!("In file: {}", filename);
+    println!("Searching for {}", config.query);
+    println!("In file {}", config.filename);
 
-    let mut f = File::open(filename).expect("file not found");
-    let mut contents = String::new();
+    if let Err(e) = rust_tutorial::run(config) {
+        // アプリケーションエラー: {}
+        println!("Application error: {}", e);
 
-    f.read_to_string(&mut contents)
-        .expect("something went wrong reading the file");
-
-    contents
+        process::exit(1);
+    }
 }
