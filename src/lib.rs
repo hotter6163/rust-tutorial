@@ -42,14 +42,17 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            // 引数の数が足りません
-            return Err("not enough arguments");
-        }
+    pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
+        args.next();
 
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string."),
+        };
+        let filename = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a filename string."),
+        };
 
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
@@ -81,130 +84,16 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results: Vec<&str> = Vec::new();
-
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
-    let mut results: Vec<&str> = Vec::new();
-
-    for line in contents.lines() {
-        if line.to_lowercase().contains(&query) {
-            results.push(line);
-        }
-    }
-
-    results
-}
-
-// --------------------
-
-#[derive(Debug, PartialEq)]
-struct Shoe {
-    size: u32,
-    style: String,
-}
-
-fn shoes_in_my_size(shoes: Vec<Shoe>, size: u32) -> Vec<Shoe> {
-    shoes.into_iter().filter(|s| s.size == size).collect()
-}
-
-#[cfg(test)]
-mod test_2 {
-    use super::*;
-
-    #[test]
-    fn iterator_demonstration() {
-        let v1 = vec![1, 2, 3];
-        let mut vi_iter = v1.iter();
-
-        assert_eq!(vi_iter.next(), Some(&1));
-        assert_eq!(vi_iter.next(), Some(&2));
-        assert_eq!(vi_iter.next(), Some(&3));
-        assert_eq!(vi_iter.next(), None);
-    }
-
-    #[test]
-    fn iterator_sum() {
-        let v1 = vec![1, 2, 3];
-        let vi_iter = v1.iter();
-
-        let total: i32 = vi_iter.sum();
-
-        assert_eq!(total, 6);
-    }
-
-    #[test]
-    fn map() {
-        let v1: Vec<i32> = vec![1, 2, 3];
-        let v2: Vec<i32> = v1.iter().map(|x| x + 1).collect();
-
-        assert_eq!(v2, vec![2, 3, 4]);
-    }
-
-    #[test]
-    fn filters_by_size() {
-        let shoes = vec![
-            Shoe {
-                size: 10,
-                style: String::from("sneaker"),
-            },
-            Shoe {
-                size: 13,
-                style: String::from("sandal"),
-            },
-            Shoe {
-                size: 10,
-                style: String::from("boot"),
-            },
-        ];
-
-        let in_my_size = shoes_in_my_size(shoes, 10);
-
-        assert_eq!(
-            in_my_size,
-            vec![
-                Shoe {
-                    size: 10,
-                    style: String::from("sneaker")
-                },
-                Shoe {
-                    size: 10,
-                    style: String::from("boot")
-                },
-            ]
-        );
-    }
-}
-
-struct Counter {
-    count: u32,
-}
-
-impl Counter {
-    fn new() -> Counter {
-        Counter { count: 0 }
-    }
-}
-
-impl Iterator for Counter {
-    type Item = u32;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.count += 1;
-
-        if self.count < 6 {
-            Some(self.count)
-        } else {
-            None
-        }
-    }
+    contents
+        .lines()
+        .filter(|line| line.to_lowercase().contains(&query))
+        .collect()
 }
