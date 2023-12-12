@@ -1,27 +1,55 @@
-use std::sync::{Arc, Mutex};
-use std::thread;
-use std::time::Duration;
+#[derive(Debug)]
+pub struct AveragedCollection {
+    list: Vec<i32>,
+    average: f64,
+}
+
+impl AveragedCollection {
+    pub fn add(&mut self, value: i32) {
+        self.list.push(value);
+        self.update_average();
+    }
+
+    pub fn remove(&mut self) -> Option<i32> {
+        let result = self.list.pop();
+        match self.list.len() {
+            0 => {
+                self.average = 0.0;
+            }
+            _ => {
+                self.update_average();
+            }
+        }
+        result
+    }
+
+    pub fn average(&self) -> f64 {
+        self.average
+    }
+
+    fn update_average(&mut self) {
+        let total: i32 = self.list.iter().sum();
+        self.average = total as f64 / self.list.len() as f64;
+    }
+
+    pub fn new() -> AveragedCollection {
+        AveragedCollection {
+            list: vec![],
+            average: 0.0,
+        }
+    }
+}
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0));
-    let mut handles = vec![];
+    let mut c = AveragedCollection::new();
+    println!("{:?}", c);
 
-    for i in 0..10 {
-        let counter = Arc::clone(&counter);
-        let handle = thread::spawn(move || {
-            if i % 2 == 0 {
-                thread::sleep(Duration::from_millis(500));
-            }
-            let mut num = counter.lock().unwrap();
-            println!("thread {}, increment from {} to {}", i, num, *num + 1);
-            *num += 1;
-        });
-        handles.push(handle);
-    }
+    c.add(5);
+    println!("{:?}", c);
 
-    for handle in handles {
-        handle.join().unwrap();
-    }
+    c.add(10);
+    println!("{:?}", c);
 
-    println!("Result: {}", *counter.lock().unwrap());
+    c.remove();
+    println!("{:?}", c);
 }
