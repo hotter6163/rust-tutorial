@@ -1,55 +1,39 @@
+mod gui;
+
+use gui::{Button, Draw, Screen};
+
 #[derive(Debug)]
-pub struct AveragedCollection {
-    list: Vec<i32>,
-    average: f64,
+struct SelectBox {
+    width: u32,
+    height: u32,
+    options: Vec<String>,
 }
 
-impl AveragedCollection {
-    pub fn add(&mut self, value: i32) {
-        self.list.push(value);
-        self.update_average();
-    }
-
-    pub fn remove(&mut self) -> Option<i32> {
-        let result = self.list.pop();
-        match self.list.len() {
-            0 => {
-                self.average = 0.0;
-            }
-            _ => {
-                self.update_average();
-            }
-        }
-        result
-    }
-
-    pub fn average(&self) -> f64 {
-        self.average
-    }
-
-    fn update_average(&mut self) {
-        let total: i32 = self.list.iter().sum();
-        self.average = total as f64 / self.list.len() as f64;
-    }
-
-    pub fn new() -> AveragedCollection {
-        AveragedCollection {
-            list: vec![],
-            average: 0.0,
-        }
+impl Draw for SelectBox {
+    fn draw(&self) {
+        println!("Drawing a select box: {:?}", self);
     }
 }
 
 fn main() {
-    let mut c = AveragedCollection::new();
-    println!("{:?}", c);
+    let screen = Screen {
+        components: vec![
+            Box::new(SelectBox {
+                width: 75,
+                height: 10,
+                options: vec![
+                    String::from("Yes"),
+                    String::from("Maybe"),
+                    String::from("No"),
+                ],
+            }),
+            Box::new(Button {
+                width: 50,
+                height: 10,
+                label: String::from("OK"),
+            }),
+        ],
+    };
 
-    c.add(5);
-    println!("{:?}", c);
-
-    c.add(10);
-    println!("{:?}", c);
-
-    c.remove();
-    println!("{:?}", c);
+    screen.run();
 }
