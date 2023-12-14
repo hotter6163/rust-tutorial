@@ -1,8 +1,15 @@
-type Kilometers = i32;
+fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
 
 fn main() {
-    let x: i32 = 5;
-    let y: Kilometers = 5;
+    let answer = do_twice(add_one, 5);
+    println!("The answer is: {}", answer);
 
-    println!("x + y = {}", x + y);
+    let list_of_numbers = vec![1, 2, 3];
+    let list_of_strings: Vec<String> = list_of_numbers.iter().map(ToString::to_string).collect();
 }
